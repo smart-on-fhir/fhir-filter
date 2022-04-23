@@ -13,7 +13,7 @@ export function tokenize(input) {
         }
         mode = modeOverride;
         buffer = data;
-        start = pos; // - 1;
+        start = pos;
     }
     function close(data = "") {
         if (data) {

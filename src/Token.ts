@@ -4,7 +4,7 @@ export default class Token<T=keyof typeof TOKEN_TYPES> {
     type: T;
     start: number;
     end: number;
-    content: string;// | Token[];
+    content: string;
 
     constructor(type: T, start: number, end: number, content: string) {
         this.type   = type;

@@ -28,7 +28,7 @@ export function tokenize(input: string)
         }
         mode   = modeOverride;
         buffer = data;
-        start  = pos// - 1;
+        start  = pos;
     }
 
     function close(data = "") {

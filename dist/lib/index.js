@@ -21,5 +21,4 @@ fhirFilter.create = function createFilter(f) {
         }
     };
 };
-// module.exports = fhirFilter
 export default fhirFilter;

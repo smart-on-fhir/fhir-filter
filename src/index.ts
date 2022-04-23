@@ -27,5 +27,4 @@ fhirFilter.create = function createFilter<T extends JSONObject = JSONObject>(f: 
     };
 };
 
-// module.exports = fhirFilter
 export default fhirFilter

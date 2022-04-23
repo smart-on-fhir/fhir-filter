@@ -93,9 +93,6 @@ export default class DateVariable extends Variable {
         }
     }
     overlaps(needle) {
-        // --- |   - | -   |  -  | --- | --- | --- | -   |   - |
-        // --- | --- | --- | --- | -   |   - |  -  |   - | -   |
-        //  1  |  1  |  1  |  1  |  1  |  1  |  1  |  0  |  0  |
         return !(this.start() > needle.end() || this.end() < needle.start());
     }
     op(operator, right) {

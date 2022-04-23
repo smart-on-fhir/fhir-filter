@@ -120,9 +120,6 @@ export default class DateVariable extends Variable<Date> {
     }
 
     protected overlaps(needle: DateVariable): boolean {
-        // --- |   - | -   |  -  | --- | --- | --- | -   |   - |
-        // --- | --- | --- | --- | -   |   - |  -  |   - | -   |
-        //  1  |  1  |  1  |  1  |  1  |  1  |  1  |  0  |  0  |
         return !(this.start() > needle.end() || this.end() < needle.start());
     }
 

@@ -9,8 +9,9 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc --project tsconfig.build.json && npm run bundle:cjs && cp index.d.ts dist/index.d.ts",
+    "build": "npm run clean && tsc --project tsconfig.build.json && npm run bundle:cjs && npm run bundle:mjs && cp index.d.ts dist/index.d.ts",
     "bundle:cjs": "rollup dist/lib/index.js --file dist/index.js --format cjs -c",
+    "bundle:mjs": "rollup dist/lib/index.js --file dist/index.mjs --format es -c",
     "test": "mocha --require ts-node/register test/**/*.test.ts",
     "test:watch": "mocha --require ts-node/register --watch --watch-files src,test --watch-extensions ts test/**/*.test.ts",
     "cover": "nyc mocha --require ts-node/register test/**/*.test.ts",

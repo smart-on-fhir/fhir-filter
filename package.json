@@ -1,0 +1,44 @@
+{
+  "name": "fhir-filter",
+  "version": "1.0.0",
+  "description": "Simple _filter implementation",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc --project tsconfig.build.json && npm run bundle:cjs && cp index.d.ts dist/index.d.ts",
+    "bundle:cjs": "rollup dist/lib/index.js --file dist/index.js --format cjs -c",
+    "test": "mocha --require ts-node/register test/**/*.test.ts",
+    "test:watch": "mocha --require ts-node/register --watch --watch-files src,test --watch-extensions ts test/**/*.test.ts",
+    "cover": "nyc mocha --require ts-node/register test/**/*.test.ts",
+    "build:watch": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smart-on-fhir/fhir-filter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smart-on-fhir/fhir-filter/issues"
+  },
+  "homepage": "https://github.com/smart-on-fhir/fhir-filter#readme",
+  "dependencies": {
+    "typescript": "^4.6.2"
+  },
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@testdeck/mocha": "^0.2.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
+    "chai": "^4.3.6",
+    "mocha": "^9.2.2",
+    "nyc": "^15.1.0",
+    "rollup": "^2.70.2",
+    "ts-node": "^10.7.0"
+  }
+}

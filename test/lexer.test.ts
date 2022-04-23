@@ -3,8 +3,8 @@ import { expect }       from "chai"
 import { tokenize }     from "../src/tokenizer"
 import {
     isCompValue, isSequence, isParamExp, isFilter,
-    is, isType, hasContent, isParamPath, isLogExp, lexCompValue,
-    lexParamExp, lexFilter, lexLogExp, lexParamPath
+    is, isType, hasContent, isParamPath, isLogExp,
+    compValue, paramExp, filter, logExp, paramPath
 } from "../src/lexer"
 
 
@@ -174,10 +174,10 @@ describe("lexer", () => {
 
     describe("Lexers", () => {
         
-        describe ("lexCompValue", () => {
+        describe ("compValue", () => {
             it ("works with strings", () => {
                 let tokens = tokenize('"aeq5"');
-                expect(lexCompValue(tokens)!).to.deep.equal({
+                expect(compValue(tokens)!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "string",
@@ -189,7 +189,7 @@ describe("lexer", () => {
                 expect(tokens.length).to.equal(0)
 
                 tokens = tokenize('"a eq 5"');
-                expect(lexCompValue(tokens)!).to.deep.equal({
+                expect(compValue(tokens)!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "string",
@@ -201,7 +201,7 @@ describe("lexer", () => {
                 expect(tokens.length).to.equal(0)
 
                 tokens = tokenize('"a\\5"');
-                expect(lexCompValue(tokens)!).to.deep.equal({
+                expect(compValue(tokens)!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "string",
@@ -213,7 +213,7 @@ describe("lexer", () => {
                 expect(tokens.length).to.equal(0)
 
                 tokens = tokenize('"a\\""')
-                expect(lexCompValue(tokens)!).to.deep.equal({
+                expect(compValue(tokens)!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "string",
@@ -226,7 +226,7 @@ describe("lexer", () => {
             })
 
             it ("works with numbers", () => {
-                expect(lexCompValue(tokenize('5'))!).to.deep.equal({
+                expect(compValue(tokenize('5'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "number",
@@ -236,7 +236,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('-5'))!).to.deep.equal({
+                expect(compValue(tokenize('-5'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "number",
@@ -246,7 +246,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('5.6'))!).to.deep.equal({
+                expect(compValue(tokenize('5.6'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "number",
@@ -256,7 +256,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('-5.6'))!).to.deep.equal({
+                expect(compValue(tokenize('-5.6'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "number",
@@ -268,7 +268,7 @@ describe("lexer", () => {
             })
 
             it ("works with dates", () => {
-                expect(lexCompValue(tokenize('2020-01'))!).to.deep.equal({
+                expect(compValue(tokenize('2020-01'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "date",
@@ -278,7 +278,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('2020-01-05'))!).to.deep.equal({
+                expect(compValue(tokenize('2020-01-05'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "date",
@@ -288,7 +288,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('2020-01-05T12:50:00Z'))!).to.deep.equal({
+                expect(compValue(tokenize('2020-01-05T12:50:00Z'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "date",
@@ -300,7 +300,7 @@ describe("lexer", () => {
             })
 
             it ("works with tokens", () => {
-                expect(lexCompValue(tokenize('true'))!).to.deep.equal({
+                expect(compValue(tokenize('true'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "token",
@@ -310,7 +310,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('false'))!).to.deep.equal({
+                expect(compValue(tokenize('false'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "token",
@@ -320,7 +320,7 @@ describe("lexer", () => {
                     }
                 })
 
-                expect(lexCompValue(tokenize('null'))!).to.deep.equal({
+                expect(compValue(tokenize('null'))!).to.deep.equal({
                     type: "compValue",
                     content: {
                         type: "token",
@@ -335,7 +335,7 @@ describe("lexer", () => {
         describe("lexParamPath", () => {
             it ("a", () => {
                 let tokens = tokenize('a');
-                expect(lexParamPath(tokens)).to.deep.equal({
+                expect(paramPath(tokens)).to.deep.equal({
                     type: "paramPath",
                     content: [{
                         type: "identifier",
@@ -349,7 +349,7 @@ describe("lexer", () => {
             
             it ("a.b", () => {
                 let tokens = tokenize('a.b');
-                expect(lexParamPath(tokens)).to.deep.equal({
+                expect(paramPath(tokens)).to.deep.equal({
                     type: "paramPath",
                     content: [{
                         type: "identifier",
@@ -369,7 +369,7 @@ describe("lexer", () => {
 
             it ("a.b.c", () => {
                 let tokens = tokenize('a.b.c')
-                expect(lexParamPath(tokens)).to.deep.equal({
+                expect(paramPath(tokens)).to.deep.equal({
                     type: "paramPath",
                     content: [{
                         type: "identifier",
@@ -395,7 +395,7 @@ describe("lexer", () => {
 
             it ("a[b eq 6].c", () => {
                 let tokens = tokenize('a[b eq 6].c')
-                expect(lexParamPath(tokens)).to.deep.equal({
+                expect(paramPath(tokens)).to.deep.equal({
                     type: "paramPath",
                     content: [
                         {
@@ -456,7 +456,7 @@ describe("lexer", () => {
 
             it ("a eq 5", () => {
                 let tokens = tokenize('a eq 5');
-                expect(lexParamExp(tokens)).to.deep.equal({
+                expect(paramExp(tokens)).to.deep.equal({
                     type: "paramExp",
                     content: [{
                         type: "paramPath",
@@ -488,7 +488,7 @@ describe("lexer", () => {
 
             it ("a.b ne 7", () => {
                 let tokens = tokenize('a.b ne 7')
-                expect(lexParamExp(tokens)).to.deep.equal({
+                expect(paramExp(tokens)).to.deep.equal({
                     type: "paramExp",
                     content: [{
                         type: "paramPath",
@@ -527,7 +527,7 @@ describe("lexer", () => {
         describe("lexLogExp", () => {
             it ("a eq 5 and b gt 6", () => {
                 let tokens = tokenize('a eq 5 and b gt 6');
-                expect(lexLogExp(tokens)).to.deep.equal({
+                expect(logExp(tokens)).to.deep.equal({
                     type: "logExp",
                     content: [
                         {
@@ -611,7 +611,7 @@ describe("lexer", () => {
 
             it ("a eq 5 or b gt 6", () => {
                 let tokens = tokenize('a eq 5 or b gt 6');
-                expect(lexLogExp(tokens)).to.deep.equal({
+                expect(logExp(tokens)).to.deep.equal({
                     type: "logExp",
                     content: [
                         {
@@ -695,7 +695,7 @@ describe("lexer", () => {
 
             it ("a eq 5 or (b gt 6)", () => {
                 let tokens = tokenize('a eq 5 or (b gt 6)');
-                expect(lexLogExp(tokens)).to.deep.equal({
+                expect(logExp(tokens)).to.deep.equal({
                     type: "logExp",
                     content: [
                         {
@@ -788,7 +788,7 @@ describe("lexer", () => {
         describe("lexFilter", () => {
             it ("a eq 5", () => {
                 let tokens = tokenize('a eq 5')
-                expect(lexFilter(tokens)).to.deep.equal({
+                expect(filter(tokens)).to.deep.equal({
                     type: "filter",
                     content: [
                         {
@@ -829,7 +829,7 @@ describe("lexer", () => {
 
             it ("a eq 5 and b gt 6", () => {
                 let tokens = tokenize('a eq 5 and b gt 6');
-                let ast = lexFilter(tokens)
+                let ast = filter(tokens)
                 // console.log(JSON.stringify(ast, null, 4))
                 expect(ast).to.deep.equal({
                     type: "filter",
@@ -918,7 +918,7 @@ describe("lexer", () => {
 
             it ("a eq 5 and b gt 6", () => {
                 let tokens = tokenize('a eq 5 and (b gt 6)');
-                let ast = lexFilter(tokens)
+                let ast = filter(tokens)
                 // console.log(JSON.stringify(ast, null, 4))
                 expect(ast).to.deep.equal({
                     type: "filter",
@@ -1012,7 +1012,7 @@ describe("lexer", () => {
         })
 
         it ("a[b ge 4].b eq 5", () => {
-            expect(lexFilter(tokenize('a[b ge 4].b eq 5'))).to.deep.equal({
+            expect(filter(tokenize('a[b ge 4].b eq 5'))).to.deep.equal({
                 type: "filter",
                 content: [
                     {

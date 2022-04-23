@@ -1,4 +1,4 @@
-import { ComparisonOperator } from "../..";
+import { COMPARISON_OPERATORS } from "../config";
 
 export default abstract class Variable<T = unknown>
 {
@@ -23,5 +23,5 @@ export default abstract class Variable<T = unknown>
         return this.value;
     }
 
-    abstract op(operator: ComparisonOperator, right: any): boolean;
+    abstract op(operator: keyof typeof COMPARISON_OPERATORS, right: any): boolean;
 }

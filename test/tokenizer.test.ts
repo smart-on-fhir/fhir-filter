@@ -46,7 +46,7 @@ describe("tokenize", () => {
             })
         }
 
-        for (const token of COMPARISON_OPERATORS) {
+        for (const token in COMPARISON_OPERATORS) {
             const result = tokenize(token)
             expect(result[0]).to.deep.equal({
                 type: "operator",
@@ -56,7 +56,7 @@ describe("tokenize", () => {
             })
         }
 
-        for (const token of LOGICAL_OPERATORS) {
+        for (const token in LOGICAL_OPERATORS) {
             const result = tokenize(token)
             expect(result[0]).to.deep.equal({
                 type: "operator",

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Simple _filter implementation",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "index.d.ts",
   "files": [
     "dist"

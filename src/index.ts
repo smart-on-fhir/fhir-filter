@@ -1,7 +1,7 @@
-import { JSONObject }     from "..";
-import { evaluateFilter } from "./evaluate";
-import { lexFilter }      from "./lexer";
-import { tokenize }       from "./tokenizer";
+import { JSONObject }          from "..";
+import { filter }              from "./evaluate";
+import { filter as lexFilter } from "./lexer";
+import { tokenize }            from "./tokenizer";
 
 
 function fhirFilter<T extends JSONObject = JSONObject>(data: T[], f: string) {
@@ -18,7 +18,7 @@ fhirFilter.create = function createFilter<T extends JSONObject = JSONObject>(f: 
 
     return (ctx: T, i: number, all: T[]) => {
         try {
-            return !!evaluateFilter(ctx, (ast.content as any)[0]);
+            return !!filter(ctx, (ast.content as any)[0]);
         } catch (ex) {
             (ex as Error).message = `Error applying filter to item ${i}: ` +
                 (ex as Error).message;

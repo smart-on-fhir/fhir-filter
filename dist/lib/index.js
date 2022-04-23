@@ -1,5 +1,5 @@
-import { evaluateFilter } from "./evaluate";
-import { lexFilter } from "./lexer";
+import { filter } from "./evaluate";
+import { filter as lexFilter } from "./lexer";
 import { tokenize } from "./tokenizer";
 function fhirFilter(data, f) {
     return data.filter(fhirFilter.create(f));
@@ -12,7 +12,7 @@ fhirFilter.create = function createFilter(f) {
     }
     return (ctx, i, all) => {
         try {
-            return !!evaluateFilter(ctx, ast.content[0]);
+            return !!filter(ctx, ast.content[0]);
         }
         catch (ex) {
             ex.message = `Error applying filter to item ${i}: ` +

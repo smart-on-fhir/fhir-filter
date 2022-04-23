@@ -1,4 +1,4 @@
-import { ComparisonOperator } from "../..";
+import { COMPARISON_OPERATORS } from "../config";
 import Variable from "./Variable";
 
 
@@ -126,7 +126,7 @@ export default class DateVariable extends Variable<Date> {
         return !(this.start() > needle.end() || this.end() < needle.start());
     }
 
-    public op(operator: ComparisonOperator, right: DateVariable): boolean {
+    public op(operator: keyof typeof COMPARISON_OPERATORS, right: DateVariable): boolean {
         switch(operator) {
             case "eq":
                 return this.compare(right) === 0;

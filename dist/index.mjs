@@ -1,22 +1,5 @@
 import { debuglog } from 'util';
 
-const COMPARISON_OPERATORS = [
-    "eq", "ne", "co", "sw", "ew", "gt",
-    "lt", "ge", "le", "ap", "sa", "eb",
-    "pr", "po", "ss", "sb", "in", "ni",
-    "re"
-];
-const LOGICAL_OPERATORS = [
-    "and", "or"
-];
-const KEYWORDS = [
-    "true", "false", "null", "not"
-];
-const RE_DATE_TIME = /^([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)))?)?)?$/;
-const RE_NUMBER = /^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?(\s|$|\))/;
-const RE_IDENTIFIER = /^[_a-zA-Z$][_\-0-9a-zA-Z$]*$/;
-const RE_QUANTITIY = /^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?([a-z]+)$/i;
-
 class Variable {
     constructor(value) {
         this.value = value;
@@ -288,6 +271,60 @@ class QuantityVariable extends Variable {
     }
 }
 
+var COMPARISON_OPERATORS;
+(function (COMPARISON_OPERATORS) {
+    COMPARISON_OPERATORS["eq"] = "eq";
+    COMPARISON_OPERATORS["ne"] = "ne";
+    COMPARISON_OPERATORS["co"] = "co";
+    COMPARISON_OPERATORS["sw"] = "sw";
+    COMPARISON_OPERATORS["ew"] = "ew";
+    COMPARISON_OPERATORS["gt"] = "gt";
+    COMPARISON_OPERATORS["lt"] = "lt";
+    COMPARISON_OPERATORS["ge"] = "ge";
+    COMPARISON_OPERATORS["le"] = "le";
+    COMPARISON_OPERATORS["ap"] = "ap";
+    COMPARISON_OPERATORS["sa"] = "sa";
+    COMPARISON_OPERATORS["eb"] = "eb";
+    COMPARISON_OPERATORS["pr"] = "pr";
+    COMPARISON_OPERATORS["po"] = "po";
+    COMPARISON_OPERATORS["ss"] = "ss";
+    COMPARISON_OPERATORS["sb"] = "sb";
+    COMPARISON_OPERATORS["in"] = "in";
+    COMPARISON_OPERATORS["ni"] = "ni";
+    COMPARISON_OPERATORS["re"] = "re";
+})(COMPARISON_OPERATORS || (COMPARISON_OPERATORS = {}));
+var LOGICAL_OPERATORS;
+(function (LOGICAL_OPERATORS) {
+    LOGICAL_OPERATORS["or"] = "or";
+    LOGICAL_OPERATORS["and"] = "and";
+})(LOGICAL_OPERATORS || (LOGICAL_OPERATORS = {}));
+var KEYWORDS;
+(function (KEYWORDS) {
+    KEYWORDS["true"] = "true";
+    KEYWORDS["false"] = "false";
+    KEYWORDS["null"] = "null";
+    KEYWORDS["not"] = "not";
+})(KEYWORDS || (KEYWORDS = {}));
+var TOKEN_TYPES;
+(function (TOKEN_TYPES) {
+    TOKEN_TYPES["operator"] = "operator";
+    TOKEN_TYPES["identifier"] = "identifier";
+    TOKEN_TYPES["string"] = "string";
+    TOKEN_TYPES["number"] = "number";
+    TOKEN_TYPES["date"] = "date";
+    TOKEN_TYPES["paramExp"] = "paramExp";
+    TOKEN_TYPES["paramPath"] = "paramPath";
+    TOKEN_TYPES["punctoator"] = "punctoator";
+    TOKEN_TYPES["boolean"] = "boolean";
+    TOKEN_TYPES["keyword"] = "keyword";
+    TOKEN_TYPES["token"] = "token";
+    TOKEN_TYPES["quantity"] = "quantity";
+})(TOKEN_TYPES || (TOKEN_TYPES = {}));
+const RE_DATE_TIME = /^([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)))?)?)?$/;
+const RE_NUMBER = /^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?(\s|$|\))/;
+const RE_IDENTIFIER = /^[_a-zA-Z$][_\-0-9a-zA-Z$]*$/;
+const RE_QUANTITIY = /^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?([a-z]+)$/i;
+
 class PathLexeme {
     constructor(content) {
         this.type = "paramPath";
@@ -364,7 +401,7 @@ class ParamExpLexeme {
 }
 
 const debug = debuglog("filter:lex");
-function evaluateCompValue(lexeme) {
+function compValue$1(lexeme) {
     let out;
     switch (lexeme.content.type) {
         case "string":
@@ -383,15 +420,15 @@ function evaluateCompValue(lexeme) {
             out = new QuantityVariable(lexeme.content.content + "");
             break;
     }
-    debug(`▶ evaluateCompValue %o ━━▶ %o`, lexeme + "", out);
+    debug(`▶ evaluate.compValue %o ━━▶ %o`, lexeme + "", out);
     return out;
 }
 function operatorExpression(left, operator, right) {
     let out = left.op(operator, right);
-    debug(`▶ operatorExpression %o %o %o ━━▶ %o`, left, operator, right, out);
+    debug(`▶ evaluate.operatorExpression %o %o %o ━━▶ %o`, left, operator, right, out);
     return out;
 }
-function evaluateIdentifier(context, identifier) {
+function identifier(context, identifier) {
     let value = context[identifier];
     let out;
     if (typeof value === "number") {
@@ -407,7 +444,6 @@ function evaluateIdentifier(context, identifier) {
     }
     else if (value && typeof value === "object") {
         out = value;
-        // return new ObjectVariable(value)
     }
     else if (value === undefined) {
         out = value;
@@ -415,14 +451,14 @@ function evaluateIdentifier(context, identifier) {
     else {
         out = new TokenVariable(value + "");
     }
-    debug(`▶ evaluateIdentifier %o against %j ━━▶ %o`, identifier, context, out);
+    debug(`▶ evaluate.identifier %o against %j ━━▶ %o`, identifier, context, out);
     return out;
 }
-function evaluateParamExp(context, expression) {
-    const left = evaluatePath(context, expression.content[0]);
+function paramExp$1(context, expression) {
+    const left = path(context, expression.content[0]);
     if (left) {
         const operator = expression.content[1].content;
-        const right = evaluateCompValue(expression.content[2]);
+        const right = compValue$1(expression.content[2]);
         if (operator === "re") {
             if (left instanceof Variable) {
                 throw new Error(`The "re" operator can only be used on objects`);
@@ -430,62 +466,62 @@ function evaluateParamExp(context, expression) {
             return typeof left === "object" && left.reference === String(right);
         }
         let out = operatorExpression(left, operator, right);
-        debug(`▶ evaluateParamExp %o against %j ━━▶ %o`, String(expression), context, out);
+        debug(`▶ evaluate.paramExp %o against %j ━━▶ %o`, String(expression), context, out);
         return out;
     }
-    debug(`▶ evaluateParamExp %o against %j ━━▶ %o`, String(expression), context, false);
+    debug(`▶ evaluate.paramExp %o against %j ━━▶ %o`, String(expression), context, false);
     return false;
 }
-function evaluatePath(context, path) {
+function path(context, path) {
     let out = path.content.reduce((prev, cur) => {
         if (!prev) {
             return prev;
         }
         switch (cur.type) {
             case "filter":
-                return evaluateFilter(prev, cur.content[0]) ? prev : undefined;
+                return filter$1(prev, cur.content[0]) ? prev : undefined;
             case "identifier":
-                return evaluateIdentifier(prev, cur.content);
+                return identifier(prev, cur.content + "");
         }
     }, context);
-    debug(`▶ evaluatePath %o against %j ━━▶ %o`, path + "", context, out);
+    debug(`▶ evaluate.path %o against %j ━━▶ %o`, path + "", context, out);
     return out;
 }
 // logExp = filter ("and" | "or" filter)+
-function evaluateLogExp(context, expression) {
-    let result = evaluateFilter(context, expression.content[0].content[0]);
+function logExp$1(context, expression) {
+    let result = filter$1(context, expression.content[0].content[0]);
     switch (expression.content[1].content) {
         case "and":
-            result = (result && evaluateFilter(context, expression.content[2].content[0]));
+            result = (result && filter$1(context, expression.content[2].content[0]));
             break;
         case "or":
-            result = (result || evaluateFilter(context, expression.content[2].content[0]));
+            result = (result || filter$1(context, expression.content[2].content[0]));
             break;
     }
-    debug(`▶ evaluateLogExp %o against %j ━━▶ %o`, expression + "", context, !!result);
+    debug(`▶ evaluate.logExp %o against %j ━━▶ %o`, expression + "", context, !!result);
     return !!result;
 }
 // filter = paramExp | logExp | (filter) | not(filter)
-function evaluateFilter(context, lexeme) {
+function filter$1(context, lexeme) {
     let out;
     if (lexeme instanceof ParamExpLexeme) {
-        if (evaluateParamExp(context, lexeme))
+        if (paramExp$1(context, lexeme))
             out = context;
     }
     else if (lexeme instanceof LogExpLexeme) {
-        if (evaluateLogExp(context, lexeme))
+        if (logExp$1(context, lexeme))
             out = context;
     }
     else if (lexeme instanceof FilterLexeme) {
-        out = evaluateFilter(context, lexeme.content[0]);
+        out = filter$1(context, lexeme.content[0]);
     }
     else if (lexeme instanceof BlockLexeme) {
-        out = evaluateFilter(context, lexeme.content[0].content[0]);
+        out = filter$1(context, lexeme.content[0].content[0]);
     }
     else { // NegationLexeme
-        out = evaluateFilter(context, lexeme.content[0].content[0]) ? undefined : context;
+        out = filter$1(context, lexeme.content[0].content[0]) ? undefined : context;
     }
-    debug(`▶ evaluateFilter %o against %j ━━▶ %o`, lexeme + "", context, out);
+    debug(`▶ evaluate.filter %o against %j ━━▶ %o`, lexeme + "", context, out);
     return out;
 }
 
@@ -631,63 +667,63 @@ function isCompValue(tokens) {
 }
 // Lexers ---------------------------------------------------------------------
 // filter = paramExp | logExp | ("not") "(" filter ")"
-function lexFilter(tokens, skipLogExp = false) {
+function filter(tokens, skipLogExp = false) {
     if (!skipLogExp && isLogExp(tokens)) {
-        return new FilterLexeme([lexLogExp(tokens, true)]);
+        return new FilterLexeme([logExp(tokens, true)]);
     }
     if (isParamExp(tokens)) {
-        const content = lexParamExp(tokens);
+        const content = paramExp(tokens);
         return new FilterLexeme([content]);
     }
     if (isSequence(tokens, ["(", isFilter, ")"])) {
         tokens.shift();
-        const content = lexFilter(tokens);
+        const content = filter(tokens);
         tokens.shift();
         return new BlockLexeme(content);
     }
     if (isSequence(tokens, ["not", "(", isFilter, ")"])) {
         tokens.shift();
         tokens.shift();
-        const content = lexFilter(tokens);
+        const content = filter(tokens);
         tokens.shift();
         return new NegationLexeme(content);
     }
     throw new Error(`Expected valid filter expression`);
 }
 // logExp = filter ("and" | "or" filter)+
-function lexLogExp(tokens, skipFilterCheck = false) {
-    let out = [lexFilter(tokens, true)];
+function logExp(tokens, skipFilterCheck = false) {
+    let out = [filter(tokens, true)];
     while (tokens.length > 0 && (hasContent(tokens[0], "and") || hasContent(tokens[0], "or"))) {
-        out.push(tokens.shift(), lexFilter(tokens, true));
+        out.push(tokens.shift(), filter(tokens, true));
     }
     return new LogExpLexeme(out);
 }
 // paramExp = paramPath SP compareOp SP compValue
-function lexParamExp(tokens) {
+function paramExp(tokens) {
     return new ParamExpLexeme([
-        lexParamPath(tokens),
+        paramPath(tokens),
         tokens.shift(),
-        lexCompValue(tokens)
+        compValue(tokens)
     ]);
 }
 // paramPath = paramName (("[" filter "]") "." paramPath)
-function lexParamPath(tokens) {
+function paramPath(tokens) {
     let out = new PathLexeme([tokens[0]]);
     tokens.shift();
     let filterLen = isSequence(tokens, ["[", isFilter, "]"]);
     if (filterLen) {
         tokens.shift();
-        out.content.push(lexFilter(tokens));
+        out.content.push(filter(tokens));
         tokens.shift();
     }
     if (isSequence(tokens, [".", isParamPath])) {
         tokens.shift();
-        out.content = out.content.concat(lexParamPath(tokens).content);
+        out.content = out.content.concat(paramPath(tokens).content);
     }
     return out;
 }
 // compValue = string | numberOrDate | token
-function lexCompValue(tokens) {
+function compValue(tokens) {
     return new CompValueLexeme(tokens.shift());
 }
 
@@ -707,7 +743,7 @@ function tokenize(input) {
     const len = input.length;
     let tokens = [];
     let pos = 0;
-    let mode = "";
+    let mode;
     let buffer = "";
     let start = 0;
     function open(data, modeOverride) {
@@ -727,13 +763,13 @@ function tokenize(input) {
                 if (["true", "false", "null"].includes(buffer)) {
                     mode = "token";
                 }
-                else if (KEYWORDS.includes(buffer)) {
+                else if (buffer in KEYWORDS) {
                     mode = "keyword";
                 }
-                else if (LOGICAL_OPERATORS.includes(buffer)) {
+                else if (buffer in LOGICAL_OPERATORS) {
                     mode = "operator";
                 }
-                else if (COMPARISON_OPERATORS.includes(buffer)) {
+                else if (buffer in COMPARISON_OPERATORS) {
                     mode = "operator";
                 }
                 else if (buffer.match(RE_IDENTIFIER)) {
@@ -755,7 +791,7 @@ function tokenize(input) {
             tokens.push(new Token(mode, start, pos + data.length, buffer));
             buffer = "";
         }
-        mode = "";
+        mode = undefined;
         start = pos + 1;
     }
     while (pos < len) {
@@ -830,13 +866,13 @@ function fhirFilter(data, f) {
 }
 fhirFilter.create = function createFilter(f) {
     let tok = tokenize(f);
-    let ast = lexFilter(tok);
+    let ast = filter(tok);
     if (!ast || tok.length) {
         throw new Error(`Failed to parse filter expression`);
     }
     return (ctx, i, all) => {
         try {
-            return !!evaluateFilter(ctx, ast.content[0]);
+            return !!filter$1(ctx, ast.content[0]);
         }
         catch (ex) {
             ex.message = `Error applying filter to item ${i}: ` +

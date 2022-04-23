@@ -1,12 +1,12 @@
-import { describe, it }       from "mocha"
-import { expect }             from "chai"
-import StringVariable         from "../src/dataTypes/StringVariable"
-import NumberVariable         from "../src/dataTypes/NumberVariable"
-import TokenVariable          from "../src/dataTypes/TokenVariable"
-import DateVariable           from "../src/dataTypes/DateVariable"
-import QuantityVariable       from "../src/dataTypes/QuantityVariable"
-import { operatorExpression } from "../src/evaluate"
-import { ComparisonOperator } from ".."
+import { describe, it }         from "mocha"
+import { expect }               from "chai"
+import StringVariable           from "../src/dataTypes/String"
+import NumberVariable           from "../src/dataTypes/Number"
+import TokenVariable            from "../src/dataTypes/Token"
+import DateVariable             from "../src/dataTypes/Date"
+import QuantityVariable         from "../src/dataTypes/Quantity"
+import { operatorExpression }   from "../src/evaluate"
+import { COMPARISON_OPERATORS } from "../src/config"
 
 
 describe("evaluate", () => {
@@ -47,7 +47,7 @@ describe("evaluate", () => {
 
     describe ("comparison expressions", () => {
 
-        const cfg: [any, any, ComparisonOperator, any, any, string?][] = [
+        const cfg: [any, any, keyof typeof COMPARISON_OPERATORS, any, any, string?][] = [
 
             // STRINGS --------------------------------------------------------
             [ StringVariable, "abc", "eq", "abc", true ],

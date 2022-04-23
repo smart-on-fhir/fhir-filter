@@ -1,4 +1,4 @@
-import { ComparisonOperator } from "../..";
+import { COMPARISON_OPERATORS } from "../config";
 import Variable from "./Variable";
 
 
@@ -18,7 +18,7 @@ export default class TokenVariable extends Variable<string> {
         return String(this.value).toLowerCase().localeCompare(compareWith.valueOf().toLowerCase());
     }
 
-    public op(operator: ComparisonOperator, right: any): boolean
+    public op(operator: keyof typeof COMPARISON_OPERATORS, right: any): boolean
     {
         switch (operator) {
             case "eq": // equal

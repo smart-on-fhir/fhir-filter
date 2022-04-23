@@ -1,5 +1,4 @@
-import { TokenType } from "..";
-import Token from "./tokens/Token";
+import Token from "./Token";
 import {
     BlockLexeme,
     CompValueLexeme,
@@ -8,7 +7,8 @@ import {
     NegationLexeme,
     ParamExpLexeme,
     PathLexeme
-} from "./lexemes/Lexeme";
+} from "./Lexemes";
+import { TOKEN_TYPES } from "./config";
 
 type matchFn = (tokens: Token[]) => number
 
@@ -17,7 +17,7 @@ type matchFn = (tokens: Token[]) => number
 // Matchers
 // Scan the token stream and return the length of the match (or 0)
 // ----------------------------------------------------------------------------
-export function is(token: Token, options: { type?: TokenType, content?: string }) {
+export function is(token: Token, options: { type?: keyof typeof TOKEN_TYPES, content?: string }) {
     let out = true;
     if (options.type) {
         out = out && token.type === options.type
@@ -28,7 +28,7 @@ export function is(token: Token, options: { type?: TokenType, content?: string }
     return out;
 }
 
-export function isType(token: Token, type: TokenType) {
+export function isType(token: Token, type: keyof typeof TOKEN_TYPES) {
     return token.type === type;
 }
 
@@ -36,7 +36,7 @@ export function hasContent(token: Token, content: string) {
     return token.content === content;
 }
 
-export function isSequence(tokens: Token[], sequence: (string | { type: TokenType, content?: string } | matchFn)[]) {
+export function isSequence(tokens: Token[], sequence: (string | { type: keyof typeof TOKEN_TYPES, content?: string } | matchFn)[]) {
     let end = 0;
     
     if (sequence.every((matcher, i) => {
@@ -193,19 +193,19 @@ export function isCompValue(tokens: Token[]) {
 // Lexers ---------------------------------------------------------------------
 
 // filter = paramExp | logExp | ("not") "(" filter ")"
-export function lexFilter(tokens: Token[], skipLogExp = false): FilterLexeme | BlockLexeme | NegationLexeme {
+export function filter(tokens: Token[], skipLogExp = false): FilterLexeme | BlockLexeme | NegationLexeme {
     if (!skipLogExp && isLogExp(tokens)) {
-        return new FilterLexeme([lexLogExp(tokens, true)!]);
+        return new FilterLexeme([logExp(tokens, true)!]);
     }
 
     if (isParamExp(tokens)) {
-        const content = lexParamExp(tokens)
+        const content = paramExp(tokens)
         return new FilterLexeme([content!]);
     }
 
     if (isSequence(tokens, ["(", isFilter, ")"])) {
         tokens.shift()
-        const content = lexFilter(tokens);
+        const content = filter(tokens);
         tokens.shift()
         return new BlockLexeme(content);
     }
@@ -213,7 +213,7 @@ export function lexFilter(tokens: Token[], skipLogExp = false): FilterLexeme | B
     if (isSequence(tokens, ["not", "(", isFilter, ")"])) {
         tokens.shift()
         tokens.shift()
-        const content: any = lexFilter(tokens);
+        const content: any = filter(tokens);
         tokens.shift()
         return new NegationLexeme(content);
     }
@@ -222,25 +222,25 @@ export function lexFilter(tokens: Token[], skipLogExp = false): FilterLexeme | B
 }
 
 // logExp = filter ("and" | "or" filter)+
-export function lexLogExp(tokens: Token[], skipFilterCheck = false): LogExpLexeme {
-    let out = [ lexFilter(tokens, true)! ];
+export function logExp(tokens: Token[], skipFilterCheck = false): LogExpLexeme {
+    let out = [ filter(tokens, true)! ];
     while (tokens.length > 0 && (hasContent(tokens[0], "and") || hasContent(tokens[0], "or"))) {
-        out.push( tokens.shift() as any, lexFilter(tokens, true) );
+        out.push( tokens.shift() as any, filter(tokens, true) );
     }
     return new LogExpLexeme(out);
 }
 
 // paramExp = paramPath SP compareOp SP compValue
-export function lexParamExp(tokens: Token[]): ParamExpLexeme {
+export function paramExp(tokens: Token[]): ParamExpLexeme {
     return new ParamExpLexeme([
-        lexParamPath(tokens),
+        paramPath(tokens),
         tokens.shift()!,
-        lexCompValue(tokens)
+        compValue(tokens)
     ])
 }
 
 // paramPath = paramName (("[" filter "]") "." paramPath)
-export function lexParamPath(tokens: Token[]): PathLexeme {
+export function paramPath(tokens: Token[]): PathLexeme {
             
     let out = new PathLexeme([ tokens[0] ]);
 
@@ -249,19 +249,19 @@ export function lexParamPath(tokens: Token[]): PathLexeme {
     let filterLen = isSequence(tokens, ["[", isFilter, "]"]);
     if (filterLen) {
         tokens.shift();
-        (out.content as any[]).push(lexFilter(tokens))
+        (out.content as any[]).push(filter(tokens))
         tokens.shift();
     }
 
     if (isSequence(tokens, [".", isParamPath])) {
         tokens.shift();
-        out.content = out.content.concat(lexParamPath(tokens).content)
+        out.content = out.content.concat(paramPath(tokens).content)
     }
 
     return out;
 }
 
 // compValue = string | numberOrDate | token
-export function lexCompValue(tokens: Token[]): CompValueLexeme {
+export function compValue(tokens: Token[]): CompValueLexeme {
     return new CompValueLexeme(tokens.shift()! as Token<"string"|"number"|"date"|"token"|"quantity">);
 }

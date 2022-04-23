@@ -1,4 +1,4 @@
-import { ComparisonOperator } from "../..";
+import { COMPARISON_OPERATORS } from "../config";
 import Variable from "./Variable";
 
 
@@ -24,7 +24,7 @@ export default class QuantityVariable extends Variable<number> {
         };
     }
 
-    public op(operator: ComparisonOperator, right: QuantityVariable): boolean {
+    public op(operator: keyof typeof COMPARISON_OPERATORS, right: QuantityVariable): boolean {
         if (this.unit.toLowerCase() !== right.unit.toLowerCase()) {
             throw new Error(`Cannot compare quantities with different units`)
         }

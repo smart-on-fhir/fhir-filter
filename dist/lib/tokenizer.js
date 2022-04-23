@@ -1,10 +1,10 @@
-import { COMPARISON_OPERATORS, KEYWORDS, LOGICAL_OPERATORS, RE_DATE_TIME, RE_IDENTIFIER, RE_NUMBER, RE_QUANTITIY } from "./config";
-import Token from "./tokens/Token";
+import Token from "./Token";
+import { COMPARISON_OPERATORS, LOGICAL_OPERATORS, KEYWORDS, RE_DATE_TIME, RE_IDENTIFIER, RE_NUMBER, RE_QUANTITIY } from "./config";
 export function tokenize(input) {
     const len = input.length;
     let tokens = [];
     let pos = 0;
-    let mode = "";
+    let mode;
     let buffer = "";
     let start = 0;
     function open(data, modeOverride) {
@@ -24,13 +24,13 @@ export function tokenize(input) {
                 if (["true", "false", "null"].includes(buffer)) {
                     mode = "token";
                 }
-                else if (KEYWORDS.includes(buffer)) {
+                else if (buffer in KEYWORDS) {
                     mode = "keyword";
                 }
-                else if (LOGICAL_OPERATORS.includes(buffer)) {
+                else if (buffer in LOGICAL_OPERATORS) {
                     mode = "operator";
                 }
-                else if (COMPARISON_OPERATORS.includes(buffer)) {
+                else if (buffer in COMPARISON_OPERATORS) {
                     mode = "operator";
                 }
                 else if (buffer.match(RE_IDENTIFIER)) {
@@ -52,7 +52,7 @@ export function tokenize(input) {
             tokens.push(new Token(mode, start, pos + data.length, buffer));
             buffer = "";
         }
-        mode = "";
+        mode = undefined;
         start = pos + 1;
     }
     while (pos < len) {

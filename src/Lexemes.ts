@@ -1,5 +1,9 @@
-import { Lexeme } from "../..";
-import Token from "../tokens/Token";
+import Token from "./Token";
+
+interface Lexeme<Type = string> {
+    type: Type
+    content: Token | (Token | Lexeme)[]
+}
 
 
 export class PathLexeme implements Lexeme {

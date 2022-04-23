@@ -1,6 +1,16 @@
-import { TokenType } from "..";
-import { COMPARISON_OPERATORS, KEYWORDS, LOGICAL_OPERATORS, RE_DATE_TIME, RE_IDENTIFIER, RE_NUMBER, RE_QUANTITIY } from "./config";
-import Token from "./tokens/Token";
+import Token from "./Token";
+import {
+    COMPARISON_OPERATORS,
+    LOGICAL_OPERATORS,
+    KEYWORDS,
+    RE_DATE_TIME,
+    RE_IDENTIFIER,
+    RE_NUMBER,
+    RE_QUANTITIY,
+    TOKEN_TYPES
+} from "./config";
+
+
 
 export function tokenize(input: string)
 {
@@ -8,11 +18,11 @@ export function tokenize(input: string)
     let tokens: Token[] = [];
 
     let pos    = 0;
-    let mode   = "";
+    let mode: keyof typeof TOKEN_TYPES | undefined;
     let buffer = ""
     let start  = 0;
 
-    function open(data: string, modeOverride: string) {
+    function open(data: string, modeOverride: keyof typeof TOKEN_TYPES) {
         if (buffer) {
             close();
         }
@@ -31,13 +41,13 @@ export function tokenize(input: string)
                 if (["true", "false", "null"].includes(buffer)) {
                     mode = "token"
                 }
-                else if (KEYWORDS.includes(buffer)) {
+                else if (buffer in KEYWORDS) {
                     mode = "keyword"
                 }
-                else if (LOGICAL_OPERATORS.includes(buffer)) {
+                else if (buffer in LOGICAL_OPERATORS) {
                     mode = "operator"
                 }
-                else if (COMPARISON_OPERATORS.includes(buffer)) {
+                else if (buffer in COMPARISON_OPERATORS) {
                     mode = "operator"
                 }
                 else if (buffer.match(RE_IDENTIFIER)) {
@@ -57,10 +67,10 @@ export function tokenize(input: string)
                 }
             }
 
-            tokens.push(new Token(mode as TokenType, start, pos + data.length, buffer));
+            tokens.push(new Token(mode, start, pos + data.length, buffer));
             buffer = "";
         }
-        mode = "";
+        mode = undefined;
         start = pos + 1
     }
 

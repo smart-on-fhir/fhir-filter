@@ -1,4 +1,4 @@
-import { ComparisonOperator } from "../..";
+import { COMPARISON_OPERATORS } from "../config";
 import Variable from "./Variable";
 
 
@@ -8,7 +8,7 @@ export default class NumberVariable extends Variable<number> {
         super(value);
     }
 
-    public op(operator: ComparisonOperator, right: Variable<number|string>): boolean {
+    public op(operator: keyof typeof COMPARISON_OPERATORS, right: Variable<number|string>): boolean {
         switch(operator) {
             case "eq":
                 return this.value === +String(right);

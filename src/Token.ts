@@ -1,10 +1,10 @@
-import { TokenType } from "../..";
+import { TOKEN_TYPES } from "./config";
 
-export default class Token<T=TokenType> {
-    type   : T;
-    start  : number;
-    end    : number;
-    content: string | Token[];
+export default class Token<T=keyof typeof TOKEN_TYPES> {
+    type: T;
+    start: number;
+    end: number;
+    content: string;// | Token[];
 
     constructor(type: T, start: number, end: number, content: string) {
         this.type   = type;

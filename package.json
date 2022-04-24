@@ -1,6 +1,6 @@
 {
   "name": "fhir-filter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple _filter implementation",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

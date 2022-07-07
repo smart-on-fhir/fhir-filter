@@ -18,7 +18,7 @@ npm install https://github.com/smart-on-fhir/fhir-filter.git@1.0.0
 ```ts
 import fhirFilter from "fhir-filter/dist"
 
-// Assuming that you have an array of objects `myArray` that needs to filtered,
+// Assuming that you have an array of objects `myArray` that needs to be filtered,
 // there are two ways to use this library:
 
 // Option 1:
@@ -26,9 +26,9 @@ import fhirFilter from "fhir-filter/dist"
 const myResult = fhirFilter(myArray, 'given eq "peter" and birthdate ge 2014-10-10')
 
 // Option 2:
-// Compile the filter expression into a callback function which can then be
-// passed to the native filter method of every array. This is useful in case
-// a filter can be created once and can be reused multiple times afterwards
+// Compile the filter expression into a function, which can then be passed to
+// the native filter method of arrays. This is useful in case a filter can be
+// created once and reused multiple times afterwards.
 const myFilterFn = fhirFilter.create('given eq "peter" and birthdate ge 2014-10-10')
 const myResult = myArray.filter(myFilterFn)
 ```
